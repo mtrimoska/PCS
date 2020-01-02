@@ -15,7 +15,9 @@ typedef char _bool_t;
 #define __DATA_SIZE_IN_BITS__ 57
 
 /// Size (in bytes) of data stored in a single vector
-#define __DATA_SIZE_IN_BYTES__ (((_vect_bin_size / (sizeof(_vect_bin_t) << 3)) + ((_vect_bin_size % (sizeof(_vect_bin_t) << 3)) ? 1 : 0)))
+///Should be equal to ceil(__DATA_SIZE_IN_BITS__/8)
+//#define __DATA_SIZE_IN_BYTES__ (((_vect_bin_size / (sizeof(_vect_bin_t) << 3)) + ((_vect_bin_size % (sizeof(_vect_bin_t) << 3)) ? 1 : 0)))
+#define __DATA_SIZE_IN_BYTES__ 8
 
 /// type of one cell of the binary vector
 typedef char _vect_bin_t;

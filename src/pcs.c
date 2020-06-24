@@ -200,7 +200,7 @@ long long int pcs_run(mpz_t x_res, int nb_threads, int nb_collisions)
 		double_and_add(&R, P, a, E);
         trail_length = 0;
 		
-		while(collision_count <= nb_collisions)
+		while(collision_count < nb_collisions)
 		{
             if(is_distinguished(R, trailling_bits, &xDist))
 			{

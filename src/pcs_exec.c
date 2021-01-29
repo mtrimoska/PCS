@@ -1,4 +1,5 @@
 /** @file pcs_exec.c
+ *  @brief The main execution file. Contains code for experiments management. 
  *
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.

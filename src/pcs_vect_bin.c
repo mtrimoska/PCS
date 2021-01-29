@@ -1,4 +1,5 @@
 /** @file pcs_vect_bin.c
+ *  @brief A byte-vector implementation used for the 'packed' property of the PRTL structure.
  *
  *	Created by Gilles Dequen on 10/11/2016.
  *	Copyright © 2016 Gilles Dequen. All rights reserved.

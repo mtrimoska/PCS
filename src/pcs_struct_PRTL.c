@@ -1,4 +1,5 @@
 /** @file pcs_struct_PRTL.c
+ *  @brief Implementation of the PRTL structure
  *
  *	Created by Monika Trimoska on 03/12/2016.
  *	Copyright © 2016 Monika Trimoska. All rights reserved.

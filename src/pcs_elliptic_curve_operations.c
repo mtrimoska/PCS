@@ -1,4 +1,5 @@
 /** @file pcs_elliptic_curve_operations.c
+ *  @brief Functions for initializing the Point and Curve structures and performing elliptic curve operations.
  * 
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.

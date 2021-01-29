@@ -1,8 +1,6 @@
 # PCS
 This is a C-code implementation of the Parallel Collision Search algorithm by van Oorschot and Wiener. It is adapted for one-collision and multi-collision search on elliptic curves.  
 
-This implementation is a result of joint work with [Sorina Ionica](https://home.mis.u-picardie.fr/~ionica/) and [Gilles Dequen](https://home.mis.u-picardie.fr/~dequen/doku.php). See our paper: [Time-Memory Analysis for Parallel Collision Search Algorithms](https://eprint.iacr.org/2017/581.pdf).
-
 Distinguished points are stored in a Packed Radix-Tree-List (PRTL) structure, introduced in our research paper. A traditional hash table is implemented as well, as the goal is to compare the different approaches. The hash function we used for this comparison is the ElfHash function, which is used in the UNIX ELF format for object files. This code is modeled in a way that makes it very easy to add and compare other storage alternatives. 
 
 ### Dependencies
@@ -41,11 +39,50 @@ The data from the experimental results is written in the ```results``` directory
 The script ```refresh_avg.sh``` computes average values for each existing configuration and stores them in corresponding ```*.avg``` files.
 
 ### Organization of the source code
+The main execution file of the source code is ```pcs_exec.c```. It also contains code for management of experimental results. The following is a brief description of the other files:
+
+```pcs_elliptic_curve_operations.c``` - Functions for initializing the Point and Curve structures and performing elliptic curve operations.
+
+```pcs_pollard_rho.c``` - Computing the random walk function and the classical Pollard's rho algorithm.
+
+```pcs_storage.c``` - Modelization of the storage functionality. Transfers calls of all data-management related functions to the respective data structures.
+
+```pcs_struct_PRTL.c``` - Implementation of the PRTL structure.
+
+```pcs_struct_hash.c``` - Implementation of a hash table.
+
+```pcs_struct_hash_UNIX.c``` - Computing the ElfHash hash table function.
+
+```pcs_vect_bin.c``` - A byte-vector implementation used for the 'packed' property of the PRTL structure.
+
+```pcs.c``` - Functions relative to the Parallel Collision Search algorithm. 
+
+### Adding other data structures for storing points
+To add an implementation of a new data structure you need to create a new C file and its corresponding header. For consistency, you can name the files ```pcs_struct_XX.c``` and ```pcs_struct_XX.h```, replacing XX with the name of your structure. Then, include ```pcs_struct_XX.h``` in ```pcs_storage.c```. Your structure needs to implement four required functions:
+
+```struct_init_XX``` - initializes the distinguished-point-storing structure.
+
+```struct_add_XX``` - looks for a point in the structure. If the point is not found it is added with the corresponding a coefficient.
+
+```struct_free_XX``` - frees the distinguished-point-storing structure.
+
+```struct_memory_XX``` - gets the memory occupation of the distinguished-point-storing structure. This is required if you need to make experimental comparisons on memory use between the different structures. 
+
+To know which parameters are available for each of these functions, see the Doxygen comments in ```pcs_storage.c```.
+
+If you need a hash table, you can use our classical implementation of a hash table with another function. In this case, you just need to create a ```pcs_struct_hash_XX.c``` file implementing the ```get_hash_XX```function that computes the hash value.
+
+Secondly, you need to add a ```case``` for your structure in all four functions in ```pcs_storage.c```.
+
+Finally, in the file ```pcs_exec.c```, on line 102 of the current version, you need to add a key-word for your structure in the list of available structures, making sure that the position of your structure in the list corresponds to the ```case```number that you chose in the previous step. For instance, if you add a structre called ```binary-tree```, and you used ```case: 2``` in the ```switch``` in ```pcs_storage.c```, line 102 should look as follows:
+
+```char *struct_i_str[] = {"PRTL", "hash_unix", "binary-tree"};```. 
+
+To use your structure, you need to execute the program using the parameter ```-l binary-tree```. 
+
 
 ### Adding curves and points
 The elliptic curves that are currently available for experiments are defined over \mathbb{F}_p, with p prime. There are f-bit curves for f=35,40,45,...,115. There are 10 points available for each curve, each of order equal to the cardinality of the group of points on the curve. To add curves and points without modifying the source code, the following rules need to be respected. Each line in the 'curves' file corresponds to one curve starting from a 35-bit field and growing in 5-bit increments. A line is composed of 5 arguments separated by spaces. For an f-bit curve E: y^2 = x^3 + Ax + B, defined over \mathbb{F}_p and of cardinality n, the arguments are as follows
-
 ``` f A B p n ```.
-
 Each line is 83 characters long (add spaces to complete). Similarly, points are stored in the 'points' file. Each line in this file is 79 characters long and hold one point P(x,y) with two arguments
 ``` x y ```.

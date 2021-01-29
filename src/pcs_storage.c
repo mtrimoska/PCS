@@ -1,4 +1,5 @@
 /** @file pcs_storage.c
+ *  @brief Modelization of the storage functionality. Transfers calls of all data-management related functions to the respective data structures.
  *
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.

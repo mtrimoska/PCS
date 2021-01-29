@@ -1,4 +1,5 @@
 /** @file pcs.c
+ *  @brief Functions relative to the Parallel Collision Search algorithm. 
  *
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.

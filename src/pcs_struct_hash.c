@@ -1,4 +1,5 @@
 /** @file pcs_struct_hash.c
+ *  @brief Implementation of a hash table.
  *
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.

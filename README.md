@@ -39,3 +39,13 @@ The data from the experimental results is written in the ```results``` directory
 ``` f s t d l time_measured ```.
 
 The script ```refresh_avg.sh``` computes average values for each existing configuration and stores them in corresponding ```*.avg``` files.
+
+### Organization of the source code
+
+### Adding curves and points
+The elliptic curves that are currently available for experiments are defined over \mathbb{F}_p, with p prime. There are f-bit curves for f=35,40,45,...,115. There are 10 points available for each curve, each of order equal to the cardinality of the group of points on the curve. To add curves and points without modifying the source code, the following rules need to be respected. Each line in the 'curves' file corresponds to one curve starting from a 35-bit field and growing in 5-bit increments. A line is composed of 5 arguments separated by spaces. For an f-bit curve E: y^2 = x^3 + Ax + B, defined over \mathbb{F}_p and of cardinality n, the arguments are as follows
+
+``` f A B p n ```.
+
+Each line is 83 characters long (add spaces to complete). Similarly, points are stored in the 'points' file. Each line in this file is 79 characters long and hold one point P(x,y) with two arguments
+``` x y ```.

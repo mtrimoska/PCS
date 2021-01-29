@@ -78,7 +78,7 @@ Finally, in the file ```pcs_exec.c```, on line 102 of the current version, you n
 
 ```char *struct_i_str[] = {"PRTL", "hash_unix", "binary-tree"};```. 
 
-To use your structure, you need to execute the program using the parameter ```-l binary-tree```. 
+To use your structure, you need to execute the program using the parameter ```-s binary-tree```. 
 
 
 ### Adding curves and points

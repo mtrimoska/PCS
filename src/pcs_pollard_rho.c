@@ -1,4 +1,5 @@
 /** @file pcs_pollard_rho.c
+ *  @brief Computing the random walk function and the classical Pollard's rho algorithm
  *
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.

@@ -1,5 +1,7 @@
 # PCS
-This is a C-code implementation of the Parallel Collision Search algorithm by van Oorschot and Wiener. It is adapted for one-collision and multi-collision search on elliptic curves.  
+This is a C-code implementation of the Parallel Collision Search algorithm by van Oorschot and Wiener. It is adapted for one-collision and multi-collision search on elliptic curves. 
+
+This implementation is a result of joint work with [Sorina Ionica](https://home.mis.u-picardie.fr/~ionica/) and [Gilles Dequen](https://home.mis.u-picardie.fr/~dequen/doku.php). See our paper: [Time-Memory Analysis for Parallel Collision Search Algorithms](https://eprint.iacr.org/2017/581.pdf).
 
 Distinguished points are stored in a Packed Radix-Tree-List (PRTL) structure, introduced in our research paper. A traditional hash table is implemented as well, as the goal is to compare the different approaches. The hash function we used for this comparison is the ElfHash function, which is used in the UNIX ELF format for object files. This code is modeled in a way that makes it very easy to add and compare other storage alternatives. 
 

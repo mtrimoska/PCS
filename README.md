@@ -106,7 +106,6 @@ The following are some examples of executions with appropriate command-line argu
 * Figure 1.
   * The __DATA_SIZE_IN_BYTES__ constant does not need to be specified, as these experiments use only the hash table structure.
   * Execution commands  
-     ./pcs_exec -f 65 -s hash_unix -n 100 -d 6 \[-t 28 -c 1\]  
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 8 \[-t 28 -c 1\]  
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 10 \[-t 28 -c 1\]  
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 12 \[-t 28 -c 1\]  
@@ -118,7 +117,6 @@ The following are some examples of executions with appropriate command-line argu
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 24 \[-t 28 -c 1\]  
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 26 \[-t 28 -c 1\]  
   * The results/time.avg file would contain:  
-      65 hash_unix 28 6 7 :2963275486: (100 tests)  
       65 hash_unix 28 8 7 :1741456996: (100 tests)  
       65 hash_unix 28 10 7 :1361757547: (100 tests)  
       65 hash_unix 28 12 7 :1321082279: (100 tests)  
@@ -130,7 +128,6 @@ The following are some examples of executions with appropriate command-line argu
       65 hash_unix 28 24 7 :1808912024: (100 tests)  
       65 hash_unix 28 26 7 :3009994583: (100 tests)  
    * The results/memory.avg file would contain:  
-      65 hash_unix 28 6 7 :5236174321: (100 tests)  
       65 hash_unix 28 8 7 :1344970051: (100 tests)  
       65 hash_unix 28 10 7 :330122598: (100 tests)  
       65 hash_unix 28 12 7 :84414141: (100 tests)  
@@ -142,7 +139,6 @@ The following are some examples of executions with appropriate command-line argu
       65 hash_unix 28 24 7 :24932: (100 tests)  
       65 hash_unix 28 26 7 :8543: (100 tests)  
    * The results/points.avg file would contain:  
-      65 hash_unix 28 6 7 :81741548: (100 tests)  
       65 hash_unix 28 8 7 :21462189: (100 tests)  
       65 hash_unix 28 10 7 :5266027: (100 tests)  
       65 hash_unix 28 12 7 :1375345: (100 tests)  
@@ -154,7 +150,6 @@ The following are some examples of executions with appropriate command-line argu
       65 hash_unix 28 24 7 :449: (100 tests)  
       65 hash_unix 28 26 7 :162: (100 tests)  
    * The results/rate.avg file would contain:  
-      65 hash_unix 28 6 7 :85.67 (50.3): (100 tests)  
       65 hash_unix 28 8 7 :87.26 (56.33): (100 tests)  
       65 hash_unix 28 10 7 :87.27 (57.32): (100 tests)  
       65 hash_unix 28 12 7 :88.95 (60.12): (100 tests)  

@@ -238,7 +238,7 @@ int main(int argc,char * argv[])
 		}
 		if(__DATA_SIZE_IN_BYTES__ > correct_data_size_in_bytes)
 		{
-			fprintf(stdout, "\n********\n\033[0;31mWarning:\033[0m The choice of compile-time parameters for the PRTL structure is not optimal for these parameters and will result in higher memory requirements. \nIf these experiments assess the memory reqirements of the PRTL structure, the __DATA_SIZE_IN_BYTES__ constant in the pcs_vect_bin.h file should be set to %d.\n********\n\n.\n", correct_data_size_in_bytes);
+			fprintf(stdout, "\n********\n\033[0;31mWarning:\033[0m The choice of compile-time parameters for the PRTL structure is not optimal for these parameters and will result in higher memory requirements. \nIf these experiments assess the memory reqirements of the PRTL structure, the __DATA_SIZE_IN_BYTES__ constant in the pcs_vect_bin.h file should be set to %d.\n********\n\n", correct_data_size_in_bytes);
 		}
 	}
 	

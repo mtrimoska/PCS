@@ -172,4 +172,13 @@ The following are some examples of executions with appropriate command-line argu
     ./pcs_exec -f 60 -s hash_unix -n 100 \[-d 15 -t 28 -c 1\]  
     ./pcs_exec -f 65 -s PRTL -n 100 -l 14 \[-d 16 -t 28 -c 1\] (__DATA_SIZE_IN_BYTES__ should be set to 13)  
     ./pcs_exec -f 65 -s hash_unix -n 100 \[-d 16 -t 28 -c 1\]  
+* Table 6.
+  * The __DATA_SIZE_IN_BYTES__ constant should be set to 12
+  * Execution commands  
+    ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 1 \[-d 15 -c 1\]  
+    ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 2 \[-d 15 -c 1\]  
+    ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 7 \[-d 15 -c 1\]  
+    ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 14 \[-d 15 -c 1\]  
+    ./pcs_exec -f 60 -s PRTL -n 100 -l 12 \[-t 28 -d 15 -c 1\]  
+    
     

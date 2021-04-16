@@ -48,7 +48,7 @@ The data from the experimental results is written in the ```results``` directory
 
 ``` f s t d l rate_bytes (rate_slots)```.
 
-The script ```refresh_avg.sh``` computes average values for each existing configuration and stores them in corresponding ```*.avg``` files. Thus, ```*.avg``` files contain a line for each ``` f s t d l``` combination of parameters, followed by the average value of the results (with the same units as in the ```*.all``` files) and the number of tests that were used to calculate the average is given in parentheses.
+The script ```refresh_avg.sh``` computes average values for each existing configuration and stores them in corresponding ```*.avg``` files. Thus, ```*.avg``` files contain a line for each ``` f s t d l``` combination of parameters, followed by the average value of the results (using the same units as in the ```*.all``` files) and the number of tests that were used to calculate the average given in parentheses.
 
 ### Organization of the source code
 The main execution file of the source code is ```pcs_exec.c```. It also contains code for management of experimental results. The following is a brief description of the other files:

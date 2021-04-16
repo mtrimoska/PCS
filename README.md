@@ -104,7 +104,7 @@ As currently, the script does not allow to specify parameters for curves that do
 The following are some examples of executions with appropriate command-line arguments, which correspond to the experiments performed for our paper. Command-line arguments are written as \[optional\] when the default value is the same as the specified value. Our experiments were performed on a 28-core processor and running times, as well as the default value of the -t parameter, may vary on different machines. 
 
 * Figure 1.
-  * The __DATA_SIZE_IN_BYTES__ constant does not need to be specified, as these experiments use only the hash finction structure.
+  * The __DATA_SIZE_IN_BYTES__ constant does not need to be specified, as these experiments use only the hash table structure.
   * Execution commands  
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 6 \[-t 28 -c 1\]  
      ./pcs_exec -f 65 -s hash_unix -n 100 -d 8 \[-t 28 -c 1\]  
@@ -166,7 +166,7 @@ The following are some examples of executions with appropriate command-line argu
       65 hash_unix 28 24 7 :91.6 (51.77): (100 tests)  
       65 hash_unix 28 26 7 :94.38 (57.10): (100 tests)  
 * Table 1.
-  * The __DATA_SIZE_IN_BYTES__ is different for each execution and specified after the corresponding command.
+  * The __DATA_SIZE_IN_BYTES__ is different for each execution and is specified after the corresponding command.
   * Execution commands  
     ./pcs_exec -f 55 -s PRTL -n 100 -d 13 -c 100 -l 15 \[-t 28\] (__DATA_SIZE_IN_BYTES__ should be set to 11)  
     ./pcs_exec -f 55 -s PRTL -n 100 -d 13 -c 500 -l 16 \[-t 28\] (__DATA_SIZE_IN_BYTES__ should be set to 11)   
@@ -174,7 +174,7 @@ The following are some examples of executions with appropriate command-line argu
     ./pcs_exec -f 55 -s PRTL -n 100 -d 13 -c 2000 -l 17 \[-t 28\] (__DATA_SIZE_IN_BYTES__ should be set to 10)    
     ./pcs_exec -f 55 -s PRTL -n 100 -d 13 -c 5000 -l 17 \[-t 28\] (__DATA_SIZE_IN_BYTES__ should be set to 10)    
     ./pcs_exec -f 55 -s PRTL -n 100 -d 13 -c 7000 -l 18 \[-t 28\] (__DATA_SIZE_IN_BYTES__ should be set to 10)  
-* Experiments in Tables 2, 3 and 4 consist in adding random points to the PRTL and hash table structures, instead of performing an ECDLP attack, so the code was modified perform these experiments. 
+* Experiments in Tables 2, 3 and 4 consist in adding random points to the PRTL and hash table structures, instead of performing an ECDLP attack, so the code was modified to perform these experiments. 
 * Table 5.
   * Execution commands  
     ./pcs_exec -f 55 -s PRTL -n 100 -l 12 \[-d 13 -t 28 -c 1\] (__DATA_SIZE_IN_BYTES__ should be set to 11)  
@@ -191,7 +191,7 @@ The following are some examples of executions with appropriate command-line argu
     ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 7 \[-d 15 -c 1\]  
     ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 14 \[-d 15 -c 1\]  
     ./pcs_exec -f 60 -s PRTL -n 100 -l 12 \[-t 28 -d 15 -c 1\]  
-* Table 7 shows experiments where the code was modified to restrict the available memory and to denote the different versions of the implementation in the results files. Results will differ when this version of code is used as this version is not adapted ti restrict the memory.      
+* Table 7 shows experiments where the code was modified to restrict the available memory and to denote the different versions of the implementation in the results files. Results will differ when this version of code is used, as this version is not adapted to restrict the memory.      
   * Execution commands  
     ./pcs_exec -f 55 -n 100 -s PRTL -l 22 -c 4000000 \[-t 28 -d 13]  
     ./pcs_exec -f 55 -n 100 -s hash_unix -c 4000000 \[-t 28 -d 13]  

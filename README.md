@@ -35,16 +35,16 @@ The PRTL structure stores all relevant data for one entry in one byte-vector. Si
 
 ### Experimental results
 The data from the experimental results is written in the ```results``` directory. A line in one of the ```*.all``` files corresponds to one run and states the configuration options used followed by the specific measurement. 
-* The ```time.all``` file reports the running time in microseconds. A line in this file corresponds to a result for one run and has following form
+* The ```time.all``` file reports the running time in microseconds. A line in this file corresponds to a result for one run and has the following form
 
 ``` f s t d l time_measured ```. 
-* The ```memory.all``` file reports the memory used in Bytes. A line in this file corresponds to a result for one run and has following form
+* The ```memory.all``` file reports the memory used in Bytes. A line in this file corresponds to a result for one run and has the following form
 
 ``` f s t d l memory_used ```.
-* The ```points.all``` file reports the number of collected distinguished points. A line in this file corresponds to a result for one run and has following form
+* The ```points.all``` file reports the number of collected distinguished points. A line in this file corresponds to a result for one run and has the following form
 
 ``` f s t d l nb_points ```.
-* The ```rate.all``` file reports the rate of use of the allocated memory in terms of two parameters: the number of Bytes and the number of slots (a slot of a hash table or a slot in the array of the PRTL structure). A line in this file corresponds to a result for one run and has following form
+* The ```rate.all``` file reports the rate of use of the allocated memory in terms of two parameters: the number of Bytes and the number of slots (a slot of a hash table or a slot in the array of the PRTL structure). A line in this file corresponds to a result for one run and has the following form
 
 ``` f s t d l rate_bytes (rate_slots)```.
 

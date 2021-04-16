@@ -18,6 +18,7 @@
 #include "pcs_pollard_rho.h"
 #include "pcs_storage.h"
 #include "pcs.h"
+#include "pcs_vect_bin.h"
 
 #define RESULTS_PATH "./results/"
 #define __NB_STRUCTURES__ 2
@@ -131,6 +132,7 @@ int main(int argc,char * argv[])
 	int test_i, nb_tests, nb_threads;
 	int nb_collisions = 1;
 	int trailling_bits_is_set = 0;
+	int correct_data_size_in_bytes;
 	uint8_t structs[__NB_STRUCTURES__] = {0};
     rate_slots = 0.0;
     level = 7;
@@ -227,6 +229,24 @@ int main(int argc,char * argv[])
 	}
 	
 	/*** END: check input parameters boundary conditions */
+	
+	/***BEGIN: check if the __DATA_SIZE_IN_BYTES__ constant is properly set for the chosen parameters */
+	if(structs[0] == 1) //these checks apply only if the PRTL structure is used
+	{
+		correct_data_size_in_bytes = 2*nb_bits - trailling_bits - level;
+		correct_data_size_in_bytes = (((correct_data_size_in_bytes / (sizeof(_vect_bin_t) << 3)) + ((correct_data_size_in_bytes % (sizeof(_vect_bin_t) << 3)) ? 1 : 0)));
+		if(__DATA_SIZE_IN_BYTES__ < correct_data_size_in_bytes)
+		{
+			fprintf(stderr, "Not enough memory per point allocated. The __DATA_SIZE_IN_BYTES__ constant in the pcs_vect_bin.h file has to be set to %d.\n", correct_data_size_in_bytes);
+			exit(1);
+		}
+		if(__DATA_SIZE_IN_BYTES__ > correct_data_size_in_bytes)
+		{
+			fprintf(stdout, "\n********\n\033[0;31mWarning:\033[0m The choice of compile-time parameters for the PRTL structure is not optimal for these parameters and will result in higher memory requirements. \nIf these experiments assess the memory reqirements of the PRTL structure, the __DATA_SIZE_IN_BYTES__ constant in the pcs_vect_bin.h file should be set to %d.\n********\n\n.\n", correct_data_size_in_bytes);
+		}
+	}
+	
+	/***END: check if the __DATA_SIZE_IN_BYTES__ constant is properly set for the chosen parameters */
 	
 	curve_init(&E);
 	point_init(&P);

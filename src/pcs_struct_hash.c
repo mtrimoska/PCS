@@ -187,12 +187,10 @@ unsigned long long int struct_memory_hash_rec(hashUNIX_t *it, unsigned long int 
 
 unsigned long long int struct_memory_hash(unsigned long int *nb_points, float *rate_of_use, float *rate_slots) 
 {
-    int link_long[1000] = {0};
 	unsigned long long int sum = 0;
 	unsigned long long int lost = 0;
 	unsigned long int i;
 	unsigned long int empty_slots = 0;
-    hashUNIX_t *next;
 	*nb_points = 0;
     int link;
     sum += sizeof(*table) * table_size;

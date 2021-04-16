@@ -93,7 +93,6 @@ void compute_x(mpz_t x, mpz_t a1, mpz_t a2, mpz_t b1, mpz_t b2, mpz_t n)
  */
 void pollard_rho(mpz_t x, point_t P, point_t Q, elliptic_curve_t E, mpz_t n, mpz_t A[20], mpz_t B[20])
 {
-	mpz_t xUP, xDOWN;
 	point_t R[2];
 	mpz_t a[2];
 	mpz_t b[2];

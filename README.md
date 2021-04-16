@@ -180,5 +180,11 @@ The following are some examples of executions with appropriate command-line argu
     ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 7 \[-d 15 -c 1\]  
     ./pcs_exec -f 60 -s PRTL -n 100 -l 12 -t 14 \[-d 15 -c 1\]  
     ./pcs_exec -f 60 -s PRTL -n 100 -l 12 \[-t 28 -d 15 -c 1\]  
-    
-    
+* Table 7 shows experiments where the code was modified to restrict the available memory and to denote the different versions of the implementation in the results files. Results will differ when this version of code is used as this version is not adapted ti restrict the memory.      
+  * Execution commands  
+    ./pcs_exec -f 55 -n 100 -s PRTL -l 22 -c 4000000 \[-t 28 -d 13]  
+    ./pcs_exec -f 55 -n 100 -s hash_unix -c 4000000 \[-t 28 -d 13]  
+    ./pcs_exec -f 55 -n 10 -s PRTL -l 23 -c 16000000 \[-t 28 -d 13]  
+    ./pcs_exec -f 55 -n 10 -s hash_unix -c 16000000 \[-t 28 -d 13]  
+    ./pcs_exec -f 55 -n 10 -s PRTL -l 24 -c 50000000 \[-t 28 -d 13]  
+    ./pcs_exec -f 55 -n 10 -s hash_unix -c 50000000 \[-t 28 -d 13]  

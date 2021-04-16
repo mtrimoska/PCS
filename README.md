@@ -34,11 +34,21 @@ By default, the program solves the ECDLP for a random point P and a random secre
 The PRTL structure stores all relevant data for one entry in one byte-vector. Since byte-vectors are statically allocated, we use a constant __DATA_SIZE_IN_BYTES__ to define the size of byte-vectors. For optimal memory use, this constant should be set to the minimum required for a specific attack. The constant is set in the ```pcs_vect_bin.h``` file and should be equal to the maximum number of bytes you need to store your data in the structure, which can be calculated as per the parameters used for your attack. For example, for the PCS we store the x-coordinate of the distinguished point and a coefficient 'a'. Don't forget to subtract the trailling zero bits and the used prefix (which is equal to l). If we solve on an f-bit curve and we use level l and d trailling zero bits, the number of bits we need is : f - d - l (for the x-coordinate) + f (for the a coefficient), and thus the number of bytes is calculated as \ceil{(2f - d - l)/8}. If this value is underestimated for your attack, the execution will halt at the start. However, if the value is overestimated, the output of the program will warn you and give a better recommendation, but will not halt execution. Using overestimated values of the __DATA_SIZE_IN_BYTES__ constant will result in inaccurate memory requirements results for the PRTL structure.
 
 ### Experimental results
-The data from the experimental results is written in the ```results``` directory. A line in one of the ```*.all``` files corresponds to one run and states the configuration options used followed by the specific measurement. For example, a line in the ```time.all``` file has the form
+The data from the experimental results is written in the ```results``` directory. A line in one of the ```*.all``` files corresponds to one run and states the configuration options used followed by the specific measurement. 
+* The ```time.all``` file reports the running time in microseconds. A line in this file corresponds to a result for one run and has following form
 
-``` f s t d l time_measured ```.
+``` f s t d l time_measured ```. 
+* The ```memory.all``` file reports the memory used in Bytes. A line in this file corresponds to a result for one run and has following form
 
-The script ```refresh_avg.sh``` computes average values for each existing configuration and stores them in corresponding ```*.avg``` files.
+``` f s t d l memory_used ```.
+* The ```points.all``` file reports the number of collected distinguished points. A line in this file corresponds to a result for one run and has following form
+
+``` f s t d l nb_points ```.
+* The ```rate.all``` file reports the rate of use of the allocated memory in terms of two parameters: the number of Bytes and the number of slots (a slot of a hash table or a slot in the array of the PRTL structure). A line in this file corresponds to a result for one run and has following form
+
+``` f s t d l rate_bytes (rate_slots)```.
+
+The script ```refresh_avg.sh``` computes average values for each existing configuration and stores them in corresponding ```*.avg``` files. Thus, ```*.avg``` files contain a line for each ``` f s t d l``` combination of parameters, followed by the average value of the results (with the same units as in the ```*.all``` files) and the number of tests that were used to calculate the average is given in parentheses.
 
 ### Organization of the source code
 The main execution file of the source code is ```pcs_exec.c```. It also contains code for management of experimental results. The following is a brief description of the other files:

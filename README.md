@@ -86,7 +86,7 @@ If you need a hash table, you can use our classical implementation of a hash tab
 
 Secondly, you need to add a ```case``` for your structure in all four functions in ```pcs_storage.c```.
 
-Finally, in the file ```pcs_exec.c```, on line 102 of the current version, you need to add a key-word for your structure in the list of available structures, making sure that the position of your structure in the list corresponds to the ```case```number that you chose in the previous step. For instance, if you add a structre called ```binary-tree```, and you used ```case: 2``` in the ```switch``` in ```pcs_storage.c```, line 102 should look as follows:
+Finally, in the file ```pcs_exec.c```, on line 103 of the current version, you need to add a key-word for your structure in the list of available structures, making sure that the position of your structure in the list corresponds to the ```case```number that you chose in the previous step. For instance, if you add a structre called ```binary-tree```, and you used ```case: 2``` in the ```switch``` in ```pcs_storage.c```, line 102 should look as follows:
 
 ```char *struct_i_str[] = {"PRTL", "hash_unix", "binary-tree"};```. 
 

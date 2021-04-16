@@ -31,7 +31,74 @@ By default, the program solves the ECDLP for a random point P and a random secre
 ```
 
 ### Setting the value of the __DATA_SIZE_IN_BITS__ constant for optimal memory use
-The PRTL structure stores all relevant data for one entry in one byte-vector. Since byte-vectors are statically allocated, we use a constant __DATA_SIZE_IN_BITS__ to define the size of byte-vectors. For optimal memory use, this constant should be set to the minimum required for a specific attack. The constant is set in the ```pcs_vect_bin.h``` file and should be equal to the maximum number of bits you need to store your data in the structure, which can be calculated as per the parameters used for your attack. For example, for the PCS we store the x-coordinate of the distinguished point and a coefficient 'a'. Don't forget to subtract the trailling zero bits and the used prefix (which is equal to l). If we solve on an f-bit curve and we use level l and d trailling zero bits, the number of bits we need is : f - d - l (for the x-coordinate) + f (for the a coefficient). There is also a __DATA_SIZE_IN_BYTES__ constant that is calculated as \ceil{__DATA_SIZE_IN_BITS__/8}. Depending on the compilator, you may need to set this constant manually as well.  
+The PRTL structure stores all relevant data for one entry in one byte-vector. Since byte-vectors are statically allocated, we use a constant __DATA_SIZE_IN_BITS__ to define the size of byte-vectors. For optimal memory use, this constant should be set to the minimum required for a specific attack. The constant is set in the ```pcs_vect_bin.h``` file and should be equal to the maximum number of bits you need to store your data in the structure, which can be calculated as per the parameters used for your attack. For example, for the PCS we store the x-coordinate of the distinguished point and a coefficient 'a'. Don't forget to subtract the trailling zero bits and the used prefix (which is equal to l). If we solve on an f-bit curve and we use level l and d trailling zero bits, the number of bits we need is : f - d - l (for the x-coordinate) + f (for the a coefficient). There is also a __DATA_SIZE_IN_BYTES__ constant that is calculated as \ceil{__DATA_SIZE_IN_BITS__/8}. Depending on the compilator, you may need to set this constant manually as well. 
+
+### Parameter choices for reproducing the results of the paper
+The following are some examples of executions with appropriate command-line arguments, which correspond to the experiments performed for our paper. Command-line arguments are written as \[optional\] when the default value is the same as the specified value. Our experiments were performed on a 28-core processor and running times may vary on different machines. 
+
+* Figure 1.
+  * The __DATA_SIZE_IN_BITS__ constant does not need to be specified, as these experiments use only the hash finction structure.
+  * Execution commands  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 6 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 8 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 10 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 12 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 14 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 16 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 18 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 20 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 22 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 24 \[-t 28 -c 1\]  
+     ./pcs_exec -f 65 -s hash_unix -n 100 -d 26 \[-t 28 -c 1\]  
+  * The results/time.avg file would contain:  
+      65 hash_unix 28 6 7 :2963275486: (100 tests)  
+      65 hash_unix 28 8 7 :1741456996: (100 tests)  
+      65 hash_unix 28 10 7 :1361757547: (100 tests)  
+      65 hash_unix 28 12 7 :1321082279: (100 tests)  
+      65 hash_unix 28 14 7 :1226721996: (100 tests)  
+      65 hash_unix 28 16 7 :1272840757: (100 tests)  
+      65 hash_unix 28 18 7 :1358805440: (100 tests)  
+      65 hash_unix 28 20 7 :1315671062: (100 tests)  
+      65 hash_unix 28 22 7 :1385919515: (100 tests)  
+      65 hash_unix 28 24 7 :1808912024: (100 tests)  
+      65 hash_unix 28 26 7 :3009994583: (100 tests)  
+   * The results/memory.avg file would contain:  
+      65 hash_unix 28 6 7 :5236174321: (100 tests)  
+      65 hash_unix 28 8 7 :1344970051: (100 tests)  
+      65 hash_unix 28 10 7 :330122598: (100 tests)  
+      65 hash_unix 28 12 7 :84414141: (100 tests)  
+      65 hash_unix 28 14 7 :20087148: (100 tests)  
+      65 hash_unix 28 16 7 :5129036: (100 tests)  
+      65 hash_unix 28 18 7 :1350889: (100 tests)  
+      65 hash_unix 28 20 7 :325659: (100 tests)  
+      65 hash_unix 28 22 7 :84388: (100 tests)  
+      65 hash_unix 28 24 7 :24932: (100 tests)  
+      65 hash_unix 28 26 7 :8543: (100 tests)  
+   * The results/points.avg file would contain:  
+      65 hash_unix 28 6 7 :81741548: (100 tests)  
+      65 hash_unix 28 8 7 :21462189: (100 tests)  
+      65 hash_unix 28 10 7 :5266027: (100 tests)  
+      65 hash_unix 28 12 7 :1375345: (100 tests)  
+      65 hash_unix 28 14 7 :324774: (100 tests)  
+      65 hash_unix 28 16 7 :84714: (100 tests)  
+      65 hash_unix 28 18 7 :22674: (100 tests)  
+      65 hash_unix 28 20 7 :5511: (100 tests)  
+      65 hash_unix 28 22 7 :1446: (100 tests)  
+      65 hash_unix 28 24 7 :449: (100 tests)  
+      65 hash_unix 28 26 7 :162: (100 tests)  
+   * The results/rate.avg file would contain:  
+      65 hash_unix 28 6 7 :85.67 (50.3): (100 tests)  
+      65 hash_unix 28 8 7 :87.26 (56.33): (100 tests)  
+      65 hash_unix 28 10 7 :87.27 (57.32): (100 tests)  
+      65 hash_unix 28 12 7 :88.95 (60.12): (100 tests)  
+      65 hash_unix 28 14 7 :87.5 (56.98): (100 tests)  
+      65 hash_unix 28 16 7 :88.1 (59.5): (100 tests)  
+      65 hash_unix 28 18 7 :90.36 (62.55): (100 tests)  
+      65 hash_unix 28 20 7 :89.28 (61.7): (100 tests)  
+      65 hash_unix 28 22 7 :90.55 (63.28): (100 tests)  
+      65 hash_unix 28 24 7 :91.6 (51.77): (100 tests)  
+      65 hash_unix 28 26 7 :94.38 (57.10): (100 tests)  
+
 
 ### Experimental results
 The data from the experimental results is written in the ```results``` directory. A line in one of the ```*.all``` files corresponds to one run and states the configuration options used followed by the specific measurement. For example, a line in the ```time.all``` file has the form

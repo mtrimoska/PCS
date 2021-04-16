@@ -98,7 +98,7 @@ The elliptic curves that are currently available for experiments are defined ove
 ``` f A B p n ```.
 Each line is 83 characters long (add spaces to complete). Similarly, points are stored in the 'points' file. Each line in this file is 79 characters long and hold one point P(x,y) with two arguments
 ``` x y ```.
-As currently, the script does not allow to specify parameters for curves that do not exist in the 'curves' file, if new curves as added, the boundary conditions handling in the ```pcs_exec.c``` file has to be justified accordingly. 
+As currently, the script does not allow to specify parameters for curves that do not exist in the 'curves' file, if new curves are added, the boundary conditions handling in the ```pcs_exec.c``` file has to be adjusted accordingly. 
 
 ### Parameter choices for reproducing the results of the paper
 The following are some examples of executions with appropriate command-line arguments, which correspond to the experiments performed for our paper. Command-line arguments are written as \[optional\] when the default value is the same as the specified value. Our experiments were performed on a 28-core processor and running times, as well as the default value of the -t parameter, may vary on different machines. 

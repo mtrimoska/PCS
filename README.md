@@ -165,4 +165,11 @@ The following are some examples of executions with appropriate command-line argu
     ./pcs_exec -f 55 -s PRTL -n 100 -d 13 -c 7000 -l 18 \[-t 28\] (__DATA_SIZE_IN_BYTES__ should be set to 10)  
 * Experiments in Tables 2, 3 and 4 consist in adding random points to the PRTL and hash table structures, instead of performing an ECDLP attack, so the code was modified perform these experiments. 
 * Table 5.
-  * 
+  * Execution commands  
+    ./pcs_exec -f 55 -s PRTL -n 100 -l 12 \[-d 13 -t 28 -c 1\] (__DATA_SIZE_IN_BYTES__ should be set to 11)  
+    ./pcs_exec -f 55 -s hash_unix -n 100 \[-d 13 -t 28 -c 1\]  
+    ./pcs_exec -f 60 -s PRTL -n 100 -l 12 \[-d 15 -t 28 -c 1\] (__DATA_SIZE_IN_BYTES__ should be set to 12)  
+    ./pcs_exec -f 60 -s hash_unix -n 100 \[-d 15 -t 28 -c 1\]  
+    ./pcs_exec -f 65 -s PRTL -n 100 -l 14 \[-d 16 -t 28 -c 1\] (__DATA_SIZE_IN_BYTES__ should be set to 13)  
+    ./pcs_exec -f 65 -s hash_unix -n 100 \[-d 16 -t 28 -c 1\]  
+    

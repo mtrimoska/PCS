@@ -77,7 +77,7 @@ void generate_adding_sets(mpz_t A[20], mpz_t B[20], mpz_t max)
 /** Print out executable usage.
  */
 void print_usage() {
-    printf("Usage: [\n-f nb_bits \n-t nb_threads \n-n nb_tests \n-s structure (PRTL or hash_unix) \n-l tree_level \n-d nb_trailling_bits_to_0 \n-c nb_collisions\n] \n");
+    printf("Usage: \n-f : choose an f-bit elliptic curve (default is 35 and currently possible values are 5k with k=7,...,23)\n-t : number of threads to use (default is the number of cores avaliable)\n-n : number of runs with different random secret keys (default is 10)\n-s : storage structure (PRTL - default or hash_unix)\n-l : level of the absract radix tree (default is 7 - see paper on how to choose this optimally)\n-d : number of trailling zero bits in a distinguished point (default is floor(f/4))\n-c : number of collisions that need to be found (default is one - for solving the ECDLP)\n");
 }
 
 /**	Add a structure to the list of structures to be used.
@@ -130,6 +130,7 @@ int main(int argc,char * argv[])
 	uint8_t nb_bits, trailling_bits, nb_curve, line_file_curves, line_file_points, nb_points_file, nb_point, j, struct_i, level;
 	int test_i, nb_tests, nb_threads;
 	int nb_collisions = 1;
+	int trailling_bits_is_set = 0;
 	uint8_t structs[__NB_STRUCTURES__] = {0};
     rate_slots = 0.0;
     level = 7;
@@ -143,7 +144,7 @@ int main(int argc,char * argv[])
 
 	while ((option = getopt(argc, argv,"f:t:n:s:l:d:c:h")) != -1) {
         switch (option) {
-			case 'f' : nb_bits = atoi(optarg) / 5 * 5;
+			case 'f' : nb_bits = atoi(optarg);
 				break;
 			case 't' : nb_threads = atoi(optarg);
 				break;
@@ -155,18 +156,77 @@ int main(int argc,char * argv[])
 				break;
 			case 'c' : nb_collisions = atoi(optarg);
 				break;
-			case 'd' : trailling_bits = atoi(optarg);
+			case 'd' : trailling_bits = atoi(optarg); trailling_bits_is_set = 1;
 				break;
 			case 'h' : {print_usage();exit(0);}
 				break;
 		}
 	}
+	
+	/*** BEGIN: check input parameters boundary conditions */
+	if(nb_bits < 35 || nb_bits > 115 || nb_bits%5 != 0)
+	{
+		fprintf(stdout, "\n********\n\033[0;31mWarning:\033[0m There is no example curve of %2" SCNu8 " bits available in the current implementation.\n", nb_bits);
+		fprintf(stdout, "Available choices for the -f parameter are: 35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115.\n");
+		nb_bits = (nb_bits / 5) * 5;
+		if(nb_bits < 35) nb_bits = 35;
+		if(nb_bits > 115) nb_bits = 115;
+		fprintf(stdout, "\033[0;31mThis execution will use a %2" SCNu8 "-bit curve.\033[0m For a different choice, please restart the program.\n********\n\n", nb_bits);
+		
+	}
+	
+	if(nb_threads < 1 || nb_threads > 2000)
+	{
+		fprintf(stderr, "Can not use %d threads. Choose a value in the [1;2000] interval.\n", nb_threads);
+		exit(1);
+	}
+	
+	if(nb_threads > omp_get_max_threads())
+	{
+		fprintf(stdout, "\n********\n\033[0;31mWarning:\033[0m Using %d threads on this machine may result in slower running times. Recommended number of threads: %d. Continuing execution with %d...\n********\n\n", nb_threads, omp_get_max_threads(), nb_threads);
+	}
     
-    if(trailling_bits == 0)
+	if(nb_tests < 1)
+	{
+		fprintf(stderr, "Invalid number of tests: %d.\n", nb_tests);
+		exit(1);
+	}
+	
+    if(trailling_bits_is_set == 0)
 	   trailling_bits = nb_bits / 4;
+	if(trailling_bits > nb_bits)
+	{
+		fprintf(stderr, "The number of trailling zero bits can not be greater than the number of bits of the x-coordinate.\n");
+		exit(1);
+	}
 	
 	if(!struct_chosen)
+	{
+		fprintf(stdout, "\n********\n\033[0;31mWarning:\033[0m There are no chosen storage structures. Adding PRTL by default.\n********\n\n");
 		add_to_struct_options(structs, struct_i_str, "PRTL", &struct_chosen);
+	}
+	
+	if(structs[0] == 1) //checks the boundary conditions of level l only if the PRTL structure is used
+	{
+		if(level < 0)
+		{
+			fprintf(stderr, "Invalid level: %d.\n", level);
+			exit(1);
+		}
+		if(level > nb_bits - trailling_bits)
+		{
+			fprintf(stderr, "The level (prefix) can not be greater than the length of a stored word: %d.\n", nb_bits - trailling_bits);
+			exit(1);
+		}
+	}
+	
+	if(nb_collisions < 1)
+	{
+		fprintf(stderr, "Invalid number of collisions: %d.\n", nb_collisions);
+		exit(1);
+	}
+	
+	/*** END: check input parameters boundary conditions */
 	
 	curve_init(&E);
 	point_init(&P);

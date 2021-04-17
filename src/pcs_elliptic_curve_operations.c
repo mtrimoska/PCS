@@ -11,6 +11,47 @@
 #include<gmp.h>
 #include "pcs_elliptic_curve_operations.h"
 
+/*** BEGIN: Preallocation for GMP objects*/
+char preallocation_init_done = 0;
+mpz_t temp_obj[__NB_TEMP_MPZ_OBJ__];
+point_t temp_point[__NB_TEMP_POINTS__];
+
+/** Allocates the temp objects that are used in all functions.
+ *
+ */
+void preallocation_init()
+{
+	int i;
+	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	{
+		mpz_init(temp_obj[i]);
+	}
+	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	{
+		point_init(&temp_point[i]);
+	}
+	preallocation_init_done = 1;
+}
+
+/** Clears the temp objects that are used in all functions.
+ *
+ */
+void preallocation_clear()
+{
+	int i;
+	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	{
+		mpz_clear(temp_obj[i]);
+	}
+	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	{
+		point_clear(&temp_point[i]);
+	}
+	preallocation_init_done = 0;
+}
+
+/*** END: Preallocation for GMP objects*/
+
 /** Initializes a point.
  * 
  * 	@param[in,out]	P	The point to be initialized.
@@ -89,20 +130,23 @@ void curve_to_string(elliptic_curve_t E)
 int is_elliptic_curve(elliptic_curve_t E)
 {
 	int result;
-	mpz_t discriminant, k1, k2;
-	mpz_init(discriminant);
+	mpz_t *discriminant, *k1, *k2;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	discriminant = &(temp_obj[0]);
+	k1 = &(temp_obj[1]);
+	k2 = &(temp_obj[2]);
 	//discriminant=4*pow(A,3)+27*pow(B,2);
-	mpz_init(k1);
-	mpz_init(k2);
-	mpz_mul(k1, E.A, E.A);
-	mpz_mul(k1, k1, E.A);
-	mpz_mul_ui(k1, k1, 4);
-	mpz_mul(k2, E.B, E.B);
-	mpz_mul_ui(k2, k2, 27);
-	mpz_add(discriminant, k1, k2);
+	mpz_mul(*k1, E.A, E.A);
+	mpz_mul(*k1, *k1, E.A);
+	mpz_mul_ui(*k1, *k1, 4);
+	mpz_mul(*k2, E.B, E.B);
+	mpz_mul_ui(*k2, *k2, 27);
+	mpz_add(*discriminant, *k1, *k2);
 	
-	result = (mpz_sgn(discriminant) != 0);
-	mpz_clears(discriminant, k1, k2, NULL);
+	result = (mpz_sgn(*discriminant) != 0);
 	return result;
 }
 
@@ -127,21 +171,24 @@ int P_is_on_E(point_t P, elliptic_curve_t E)
 		}
 	}
 	
-	mpz_t left, right, sub_right;
-	mpz_init(left);
-	mpz_init(right);
-	mpz_init(sub_right);
-	mpz_mul(left, P.y, P.y);
-	mod(left, E.p);
-	mpz_mul(sub_right, E.A, P.x);
-	mpz_mul(right, P.x, P.x);
-	mpz_mul(right, right, P.x);
-	mpz_add(right, right, sub_right);
-	mpz_add(right, right, E.B);
-	mpz_mmod(right, right, E.p);
+	mpz_t *left, *right, *sub_right;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	left = &(temp_obj[3]);
+	right = &(temp_obj[4]);
+	sub_right = &(temp_obj[5]);
+	mpz_mul(*left, P.y, P.y);
+	mod(*left, E.p);
+	mpz_mul(*sub_right, E.A, P.x);
+	mpz_mul(*right, P.x, P.x);
+	mpz_mul(*right, *right, P.x);
+	mpz_add(*right, *right, *sub_right);
+	mpz_add(*right, *right, E.B);
+	mpz_mmod(*right, *right, E.p);
 	
-	result = (mpz_cmp(left, right) == 0);
-	mpz_clears(left, right, sub_right, NULL);
+	result = (mpz_cmp(*left, *right) == 0);
 	return result;
 }
 
@@ -187,8 +234,19 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 	}
 	
 	//Other cases
-	mpz_t l, up, down, v, up_bis, x3, y3;
-	mpz_inits(l, up, down, v, up_bis, x3, y3, NULL);
+	mpz_t *l, *up, *down, *v, *up_bis, *x3, *y3;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	l = &(temp_obj[6]);
+	up = &(temp_obj[7]);
+	down = &(temp_obj[8]);
+	v = &(temp_obj[9]);
+	up_bis = &(temp_obj[10]);
+	x3 = &(temp_obj[11]);
+	y3 = &(temp_obj[12]);
+	
 	if(equal(P1, P2))
 	{
 		if (mpz_sgn(P1.y) == 0)
@@ -200,27 +258,27 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 		}
 		else
 		{	
-			mpz_mul(up, P1.x, P1.x),
-			mpz_mul_ui(up, up, 3);
-			mpz_add(up, up, E.A);
-			mpz_mmod(up, up, E.p);
+			mpz_mul(*up, P1.x, P1.x),
+			mpz_mul_ui(*up, *up, 3);
+			mpz_add(*up, *up, E.A);
+			mpz_mmod(*up, *up, E.p);
 			
-			mpz_mul_ui(down, P1.y, 2);
-			mpz_invert(down, down, E.p);
+			mpz_mul_ui(*down, P1.y, 2);
+			mpz_invert(*down, *down, E.p);
 			
-			mpz_mul(l, up, down);
-			mpz_mmod(l, l, E.p);
+			mpz_mul(*l, *up, *down);
+			mpz_mmod(*l, *l, E.p);
 			
-			mpz_mul(up, P1.x, P1.x);
-			mpz_mul(up, up, P1.x);
-			mpz_neg(up, up);
-			mpz_mul(up_bis, P1.x, E.A);
-			mpz_add(up, up, up_bis);
-			mpz_mul_ui(up_bis, E.B, 2);
-			mpz_add(up, up, up_bis);
+			mpz_mul(*up, P1.x, P1.x);
+			mpz_mul(*up, *up, P1.x);
+			mpz_neg(*up, *up);
+			mpz_mul(*up_bis, P1.x, E.A);
+			mpz_add(*up, *up, *up_bis);
+			mpz_mul_ui(*up_bis, E.B, 2);
+			mpz_add(*up, *up, *up_bis);
 			
-			mpz_mul(v, up, down);
-			mpz_mmod(v, v, E.p);
+			mpz_mul(*v, *up, *down);
+			mpz_mmod(*v, *v, E.p);
             
 		}
 	}
@@ -235,35 +293,34 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 		}
 		else
 		{
-			mpz_sub(up, P2.y, P1.y);
-			mpz_sub(down, P2.x, P1.x);
-			mpz_invert(down, down, E.p);
-			mpz_mul(l, up, down);
-			mpz_mmod(l, l, E.p);
+			mpz_sub(*up, P2.y, P1.y);
+			mpz_sub(*down, P2.x, P1.x);
+			mpz_invert(*down, *down, E.p);
+			mpz_mul(*l, *up, *down);
+			mpz_mmod(*l, *l, E.p);
 			
-			mpz_mul(up_bis, P2.y, P1.x);
-			mpz_mul(up, P2.x, P1.y);
-			mpz_sub(up, up, up_bis);
-			mpz_mul(v, up, down);
-			mpz_mmod(v, v, E.p);
+			mpz_mul(*up_bis, P2.y, P1.x);
+			mpz_mul(*up, P2.x, P1.y);
+			mpz_sub(*up, *up, *up_bis);
+			mpz_mul(*v, *up, *down);
+			mpz_mmod(*v, *v, E.p);
 		}
 	}
 	
 	//Compute x3
-	mpz_mul(x3, l, l);
-	mpz_sub(x3, x3, P1.x);
-	mpz_sub(x3, x3, P2.x);
-	mpz_mmod(x3, x3, E.p);
+	mpz_mul(*x3, *l, *l);
+	mpz_sub(*x3, *x3, P1.x);
+	mpz_sub(*x3, *x3, P2.x);
+	mpz_mmod(*x3, *x3, E.p);
 	//Compute y3
-	mpz_neg(y3, l);
-	mpz_mul(y3, y3, x3);
-	mpz_sub(y3, y3, v);
-	mpz_mmod(y3, y3, E.p);
+	mpz_neg(*y3, *l);
+	mpz_mul(*y3, *y3, *x3);
+	mpz_sub(*y3, *y3, *v);
+	mpz_mmod(*y3, *y3, E.p);
 	//Initialize P3
-	mpz_set(P3->x, x3);
-	mpz_set(P3->y, y3);
+	mpz_set(P3->x, *x3);
+	mpz_set(P3->y, *y3);
 	mpz_set_ui(P3->z, 1);
-	mpz_clears(l, x3, y3, up, down, v, up_bis, NULL);
 	return 0;
 }
 
@@ -293,29 +350,33 @@ int double_and_add(point_t *R, point_t P, mpz_t s, elliptic_curve_t E)
 	if(P_is_on_E(P, E) == 0) 
 		return 1;
 		
-	mpz_t remainder, s_cpy;
-	mpz_init(remainder);
-	mpz_init_set(s_cpy, s);
-	point_t temp;
-	mpz_init_set(temp.x, P.x);
-	mpz_init_set(temp.y, P.y);
-	mpz_init_set(temp.z, P.z);
+	mpz_t *remainder, *s_cpy;
+	point_t *temp;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	remainder = &(temp_obj[13]);
+	s_cpy = &(temp_obj[14]);
+	temp = &(temp_point[0]);
+	mpz_set(*s_cpy, s);
+	mpz_set(temp->x, P.x);
+	mpz_set(temp->y, P.y);
+	mpz_set(temp->z, P.z);
 	
 	//Set result to the identity element at first
 	mpz_set_ui(R->x, 0);
 	mpz_set_ui(R->y, 1);
 	mpz_set_ui(R->z, 0); 
 	
-	while(mpz_sgn(s_cpy) != 0)
+	while(mpz_sgn(*s_cpy) != 0)
 	{
-		mpz_divmod_ui(s_cpy, remainder, s_cpy, 2);
-		if(mpz_sgn(remainder) != 0)
+		mpz_divmod_ui(*s_cpy, *remainder, *s_cpy, 2);
+		if(mpz_sgn(*remainder) != 0)
 		{
-			add(R, temp, *R, E);
+			add(R, *temp, *R, E);
 		}
-		_double(&temp, temp, E);
+		_double(temp, *temp, E);
 	}
-	mpz_clears(remainder, s_cpy, NULL);
-	point_clear(&temp);
 	return 0;
 }

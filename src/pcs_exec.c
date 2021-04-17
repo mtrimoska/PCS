@@ -565,4 +565,5 @@ int main(int argc,char * argv[])
 	{
 		mpz_clears(A[j],B[j],NULL);
 	}
+	preallocation_clear();
 }

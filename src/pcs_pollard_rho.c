@@ -69,16 +69,20 @@ void f(point_t oldR, point_t M, point_t * newR, elliptic_curve_t e)
  */
 void compute_x(mpz_t x, mpz_t a1, mpz_t a2, mpz_t b1, mpz_t b2, mpz_t n)
 {
-	mpz_t xUP, xDOWN;
-	mpz_inits(xUP, xDOWN, NULL);	
-	mpz_sub(xUP, a2, a1);
-	mpz_mmod(xUP, xUP, n);
-	mpz_sub(xDOWN, b1, b2);
-	mpz_mmod(xDOWN, xDOWN, n);
-	mpz_invert(xDOWN, xDOWN, n);
-	mpz_mul(x, xUP, xDOWN);
+	mpz_t *xUP, *xDOWN;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	xUP = &(temp_obj[18]);
+	xDOWN = &(temp_obj[19]);
+	mpz_sub(*xUP, a2, a1);
+	mpz_mmod(*xUP, *xUP, n);
+	mpz_sub(*xDOWN, b1, b2);
+	mpz_mmod(*xDOWN, *xDOWN, n);
+	mpz_invert(*xDOWN, *xDOWN, n);
+	mpz_mul(x, *xUP, *xDOWN);
 	mpz_mmod(x, x, n);
-	mpz_clears(xUP, xDOWN, NULL);
 }
 
 /** The classic Pollard's rho method.

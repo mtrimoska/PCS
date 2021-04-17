@@ -12,6 +12,7 @@
 #include <inttypes.h>
 #include "pcs_vect_bin.h"
 #include "pcs_struct_PRTL.h"
+#include "pcs_elliptic_curve_operations.h"
 
 static uint8_t nb_bits;
 static uint8_t level;
@@ -90,13 +91,17 @@ int struct_add_PRTL(mpz_t a_out, mpz_t a_in, mpz_t xDist)
 	_vect_bin_chain_t *new;
 	_vect_bin_chain_t *last;
 	_vect_bin_chain_t *next;
-    mpz_t key_mpz;
+    mpz_t *key_mpz;
     int key;
     
-    mpz_inits(key_mpz, NULL);
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	key_mpz = &(temp_obj[20]);
 	
-    mpz_and(key_mpz, xDist, mask);
-    key = mpz_get_ui(key_mpz);
+    mpz_and(*key_mpz, xDist, mask);
+    key = mpz_get_ui(*key_mpz);
     omp_set_lock(&locks[key]);
     next = &chain_array[key];
     if(vect_bin_is_empty(next->v))
@@ -150,7 +155,6 @@ int struct_add_PRTL(mpz_t a_out, mpz_t a_in, mpz_t xDist)
         }
     }
 	omp_unset_lock(&locks[key]);
-    mpz_clears(key_mpz, NULL);
 	return retval;
 }
 

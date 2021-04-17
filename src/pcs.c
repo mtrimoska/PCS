@@ -57,13 +57,18 @@ int is_distinguished(point_t R, int trailling_bits, mpz_t *q)
 int same_point(point_t R, mpz_t a, mpz_t b)
 {
 	int res;
-	point_t S1, S2, S;
-	mpz_inits(S1.x, S1.y, S1.z, S2.x, S2.y, S2.z, S.x, S.y, S.z, NULL);
-	double_and_add(&S1, P, a, E);
-	double_and_add(&S2, Q, b, E);
-	add(&S, S1, S2, E);
-	res=(mpz_cmp(R.y, S.y) == 0);
-	mpz_clears(S1.x, S1.y, S1.z, S2.x, S2.y, S2.z, S.x, S.y, S.z, NULL);
+	point_t *S1, *S2, *S;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	S1 = &(temp_point[1]);
+	S2 = &(temp_point[2]);
+	S = &(temp_point[3]);
+	double_and_add(S1, P, a, E);
+	double_and_add(S2, Q, b, E);
+	add(S, *S1, *S2, E);
+	res=(mpz_cmp(R.y, S->y) == 0);
 	return res;
 }
 
@@ -75,12 +80,16 @@ int same_point(point_t R, mpz_t a, mpz_t b)
  */
 void lin_comb(point_t * R, mpz_t a, mpz_t b)
 {
-	point_t S1, S2;
-	mpz_inits(S1.x, S1.y, S1.z, S2.x, S2.y, S2.z, NULL);
-	double_and_add(&S1, P, a, E);
-	double_and_add(&S2, Q, b, E);
-	add(R, S1, S2, E);
-	mpz_clears(S1.x, S1.y, S1.z, S2.x, S2.y, S2.z, NULL);
+	point_t *S1, *S2;
+	if(!preallocation_init_done)
+	{
+		preallocation_init();
+	}
+	S1 = &(temp_point[1]);
+	S2 = &(temp_point[2]);
+	double_and_add(S1, P, a, E);
+	double_and_add(S2, Q, b, E);
+	add(R, *S1, *S2, E);
 }
 
 /** Checks if there is a collision.
@@ -89,48 +98,52 @@ void lin_comb(point_t * R, mpz_t a, mpz_t b)
 int is_collision(mpz_t x, mpz_t a1, mpz_t a2, int trailling_bits)
 {
 	uint8_t r;
-	mpz_t xDist_;
+	mpz_t *xDist_;
 	int retval = 0;
-	mpz_t b1, b2;
-	point_t R;
-	point_init(&R);
-	mpz_inits(b1, b2, xDist_, NULL);
-	
-	mpz_set_ui(b2, 0);
-	mpz_set_ui(b1, 0);
-	double_and_add(&R, P, a1, E);
-	//recompute first a,b pair
-	while(!is_distinguished(R, trailling_bits, &xDist_))
+	mpz_t *b1, *b2;
+	point_t *R;
+	if(!preallocation_init_done)
 	{
-		r = hash(R.y);
+		preallocation_init();
+	}
+	b1 = &(temp_obj[15]);
+	b2 = &(temp_obj[16]);
+	xDist_ = &(temp_obj[17]);
+	R = &(temp_point[4]);
+	
+	mpz_set_ui(*b2, 0);
+	mpz_set_ui(*b1, 0);
+	double_and_add(R, P, a1, E);
+	//recompute first a,b pair
+	while(!is_distinguished(*R, trailling_bits, xDist_))
+	{
+		r = hash(R->y);
 		compute_a(a1, A[r], n);
-		compute_b(b1, B[r], n);
-		f(R, M[r], &R, E);
+		compute_b(*b1, B[r], n);
+		f(*R, M[r], R, E);
 	}
 	
 	//recompute second a,b pair
-	double_and_add(&R, P, a2, E);
-	while(!is_distinguished(R, trailling_bits, &xDist_))
+	double_and_add(R, P, a2, E);
+	while(!is_distinguished(*R, trailling_bits, xDist_))
 	{
-		r = hash(R.y);
+		r = hash(R->y);
 		compute_a(a2, A[r], n);
-		compute_b(b2, B[r], n);
-		f(R, M[r], &R, E);
+		compute_b(*b2, B[r], n);
+		f(*R, M[r], R, E);
 	}
-	if(mpz_cmp(b1, b2) != 0) //we found two different pairs, so collision
+	if(mpz_cmp(*b1, *b2) != 0) //we found two different pairs, so collision
 	{
-		if(!same_point(R, a1, b1)) //it's the inverse point
+		if(!same_point(*R, a1, *b1)) //it's the inverse point
 		{	
 			mpz_neg(a2, a2); 
 			mpz_mmod(a2, a2, n);
-			mpz_neg(b2, b2);
-			mpz_mmod(b2, b2, n);
+			mpz_neg(*b2, *b2);
+			mpz_mmod(*b2, *b2, n);
 		}
-		compute_x(x, a1, a2, b1, b2, n);
+		compute_x(x, a1, a2, *b1, *b2, n);
 		retval = 1;
 	}
-	point_clear(&R);
-	mpz_clears(b1, b2, xDist_, NULL);
 	return retval;
 }
 

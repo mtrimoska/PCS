@@ -74,8 +74,8 @@ void compute_x(mpz_t x, mpz_t a1, mpz_t a2, mpz_t b1, mpz_t b2, mpz_t n)
 	{
 		preallocation_init();
 	}
-	xUP = &(temp_obj[18]);
-	xDOWN = &(temp_obj[19]);
+	xUP = &(temp_obj[omp_get_thread_num()][12]);
+	xDOWN = &(temp_obj[omp_get_thread_num()][13]);
 	mpz_sub(*xUP, a2, a1);
 	mpz_mmod(*xUP, *xUP, n);
 	mpz_sub(*xDOWN, b1, b2);

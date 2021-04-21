@@ -1,6 +1,6 @@
 /** @file pcs_elliptic_curve_operations.c
  *  @brief Functions for initializing the Point and Curve structures and performing elliptic curve operations.
- * 
+ *
  *	Created by Monika Trimoska on 03/12/2015.
  *	Copyright © 2015 Monika Trimoska. All rights reserved.
  */
@@ -9,26 +9,48 @@
 #include<stdlib.h>
 #include<math.h>
 #include<gmp.h>
+#include<omp.h>
+#include<assert.h>
 #include "pcs_elliptic_curve_operations.h"
 
 /*** BEGIN: Preallocation for GMP objects*/
 char preallocation_init_done = 0;
-mpz_t temp_obj[__NB_TEMP_MPZ_OBJ__];
-point_t temp_point[__NB_TEMP_POINTS__];
+mpz_t** temp_obj;
+point_t** temp_point;
+static int nb_threads = 0;
+
+/** Set number of threads used for this execution.
+ *
+ */
+void set_nb_threads(int nb_t)
+{
+	nb_threads = nb_t;
+}
 
 /** Allocates the temp objects that are used in all functions.
  *
  */
 void preallocation_init()
 {
-	int i;
-	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	int i, j;
+	assert(nb_threads > 0 && "Number of threads is not set");
+	temp_obj = (mpz_t **) malloc(sizeof(mpz_t *) * nb_threads);
+	temp_point = (point_t **) malloc(sizeof(point_t *) * nb_threads);
+	for(j = 0; j < nb_threads; j++)
 	{
-		mpz_init(temp_obj[i]);
+		temp_obj[j] = (mpz_t *) malloc(sizeof(mpz_t) * __NB_TEMP_MPZ_OBJ__);
+		for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+		{
+			mpz_init(temp_obj[j][i]);
+		}
 	}
-	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	for(j = 0; j < nb_threads; j++)
 	{
-		point_init(&temp_point[i]);
+		temp_point[j] = (point_t *) malloc(sizeof(point_t) * __NB_TEMP_POINTS__);
+		for(i = 0; i < __NB_TEMP_POINTS__; i++)
+		{
+			point_init(&temp_point[j][i]);
+		}
 	}
 	preallocation_init_done = 1;
 }
@@ -38,22 +60,24 @@ void preallocation_init()
  */
 void preallocation_clear()
 {
-	int i;
+	int i, j;
 	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
 	{
-		mpz_clear(temp_obj[i]);
+		mpz_clear(temp_obj[j][i]);
 	}
-	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	for(i = 0; i < __NB_TEMP_POINTS__; i++)
 	{
-		point_clear(&temp_point[i]);
+		point_clear(&temp_point[j][i]);
 	}
+	free(temp_obj);
+	free(temp_point);
 	preallocation_init_done = 0;
 }
 
 /*** END: Preallocation for GMP objects*/
 
 /** Initializes a point.
- * 
+ *
  * 	@param[in,out]	P	The point to be initialized.
  */
 void point_init(point_t *P)
@@ -62,7 +86,7 @@ void point_init(point_t *P)
 }
 
 /** Initializes a curve.
- * 
+ *
  * 	@param[in,out]	E	The curve to be initialized.
  */
 void curve_init(elliptic_curve_t *E)
@@ -71,7 +95,7 @@ void curve_init(elliptic_curve_t *E)
 }
 
 /** Clears a point structure.
- * 
+ *
  * 	@param[in,out]	P	The point to be cleared.
  */
 void point_clear(point_t *P)
@@ -80,7 +104,7 @@ void point_clear(point_t *P)
 }
 
 /** Clears a curve structure.
- * 
+ *
  * 	@param[in,out]	P	The curve to be cleared.
  */
 void curve_clear(elliptic_curve_t *E)
@@ -90,7 +114,7 @@ void curve_clear(elliptic_curve_t *E)
 
 /**	The modulo operation.
  * 	@brief Performs the modulo operation on mpz numbers. The result is always non-negative.
- * 
+ *
  * 	@param[in,out]	a	The dividend. The value of a is changed in the function.
  * 	@param[in]		p	The divisor.
  */
@@ -104,7 +128,7 @@ void mod(mpz_t a, mpz_t p)
 }
 
 /** Prints out a point to stdout in the form [x,y,z].
- * 
+ *
  * 	@param[in]	P	The point to be printed.
  */
 void point_to_string(point_t P)
@@ -114,7 +138,7 @@ void point_to_string(point_t P)
 
 
 /** Prints out an elliptic curve to stdout in the form y^2 = x^3 + Ax + B (mod p).
- * 
+ *
  * 	@param[in]	E	The curve to be printed.
  */
 void curve_to_string(elliptic_curve_t E)
@@ -123,35 +147,32 @@ void curve_to_string(elliptic_curve_t E)
 }
 
 /** Checks if the structure repsents a nonsingular elliptic curve of the form y^2 = x^3 + Ax + B.
- * 
+ *
  * 	@param[in]	E	The curve to be checked.
  * 	@return 	Returns 1 for yes and 0 for no.
  */
 int is_elliptic_curve(elliptic_curve_t E)
 {
 	int result;
-	mpz_t *discriminant, *k1, *k2;
-	if(!preallocation_init_done)
-	{
-		preallocation_init();
-	}
-	discriminant = &(temp_obj[0]);
-	k1 = &(temp_obj[1]);
-	k2 = &(temp_obj[2]);
+	mpz_t discriminant, k1, k2;
+	mpz_init(discriminant);
 	//discriminant=4*pow(A,3)+27*pow(B,2);
-	mpz_mul(*k1, E.A, E.A);
-	mpz_mul(*k1, *k1, E.A);
-	mpz_mul_ui(*k1, *k1, 4);
-	mpz_mul(*k2, E.B, E.B);
-	mpz_mul_ui(*k2, *k2, 27);
-	mpz_add(*discriminant, *k1, *k2);
+	mpz_init(k1);
+	mpz_init(k2);
+	mpz_mul(k1, E.A, E.A);
+	mpz_mul(k1, k1, E.A);
+	mpz_mul_ui(k1, k1, 4);
+	mpz_mul(k2, E.B, E.B);
+	mpz_mul_ui(k2, k2, 27);
+	mpz_add(discriminant, k1, k2);
 	
-	result = (mpz_sgn(*discriminant) != 0);
+	result = (mpz_sgn(discriminant) != 0);
+	mpz_clears(discriminant, k1, k2, NULL);
 	return result;
 }
 
 /** Checks if P is a point on the curve E.
- * 	
+ *
  * 	@param[in]	P	The point.
  * 	@param[in]	E	The curve.
  * 	@return		Returns 1 for yes and 0 for no.
@@ -171,30 +192,27 @@ int P_is_on_E(point_t P, elliptic_curve_t E)
 		}
 	}
 	
-	mpz_t *left, *right, *sub_right;
-	if(!preallocation_init_done)
-	{
-		preallocation_init();
-	}
-	left = &(temp_obj[3]);
-	right = &(temp_obj[4]);
-	sub_right = &(temp_obj[5]);
-	mpz_mul(*left, P.y, P.y);
-	mod(*left, E.p);
-	mpz_mul(*sub_right, E.A, P.x);
-	mpz_mul(*right, P.x, P.x);
-	mpz_mul(*right, *right, P.x);
-	mpz_add(*right, *right, *sub_right);
-	mpz_add(*right, *right, E.B);
-	mpz_mmod(*right, *right, E.p);
+	mpz_t left, right, sub_right;
+	mpz_init(left);
+	mpz_init(right);
+	mpz_init(sub_right);
+	mpz_mul(left, P.y, P.y);
+	mod(left, E.p);
+	mpz_mul(sub_right, E.A, P.x);
+	mpz_mul(right, P.x, P.x);
+	mpz_mul(right, right, P.x);
+	mpz_add(right, right, sub_right);
+	mpz_add(right, right, E.B);
+	mpz_mmod(right, right, E.p);
 	
-	result = (mpz_cmp(*left, *right) == 0);
+	result = (mpz_cmp(left, right) == 0);
+	mpz_clears(left, right, sub_right, NULL);
 	return result;
 }
 
 /** Compares two points on an elliptic curve.
  * 	@brief	The function assumes that P1 and P2 are valid points on a curve.
- * 
+ *
  * 	@param[in]	P1	The first point.
  * 	@param[in]	P2	The second point.
  * 	@return		Returns 1 is the two points are equal, 0 otherwise.
@@ -205,7 +223,7 @@ int equal(point_t P1, point_t P2)
 }
 
 /** Adds two points on a curve.
- * 
+ *
  * 	@param[out]	P3	P3 will be set to P1+P2. P3 should be initialized beforehand.
  * 	@param[in]	P1	The first point.
  * 	@param[in]	P2	The second point.
@@ -214,8 +232,8 @@ int equal(point_t P1, point_t P2)
  */
 int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 {
-	if((P_is_on_E(P1, E) == 0) || (P_is_on_E(P2, E) == 0))
-		return 1;
+	//if((P_is_on_E(P1, E) == 0) || (P_is_on_E(P2, E) == 0))
+		//return 1;
 	
 	//Addition with the identity element
 	if(mpz_get_ui(P1.z) != 1)
@@ -239,13 +257,13 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 	{
 		preallocation_init();
 	}
-	l = &(temp_obj[6]);
-	up = &(temp_obj[7]);
-	down = &(temp_obj[8]);
-	v = &(temp_obj[9]);
-	up_bis = &(temp_obj[10]);
-	x3 = &(temp_obj[11]);
-	y3 = &(temp_obj[12]);
+	l = &(temp_obj[omp_get_thread_num()][0]);
+	up = &(temp_obj[omp_get_thread_num()][1]);
+	down = &(temp_obj[omp_get_thread_num()][2]);
+	v = &(temp_obj[omp_get_thread_num()][3]);
+	up_bis = &(temp_obj[omp_get_thread_num()][4]);
+	x3 = &(temp_obj[omp_get_thread_num()][5]);
+	y3 = &(temp_obj[omp_get_thread_num()][6]);
 	
 	if(equal(P1, P2))
 	{
@@ -257,7 +275,7 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 			return 0;
 		}
 		else
-		{	
+		{
 			mpz_mul(*up, P1.x, P1.x),
 			mpz_mul_ui(*up, *up, 3);
 			mpz_add(*up, *up, E.A);
@@ -279,7 +297,7 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 			
 			mpz_mul(*v, *up, *down);
 			mpz_mmod(*v, *v, E.p);
-            
+			
 		}
 	}
 	else
@@ -324,9 +342,9 @@ int add(point_t *P3, point_t P1, point_t P2, elliptic_curve_t E)
 	return 0;
 }
 
-/** Local function used in square_and_multiply. 
+/** Local function used in square_and_multiply.
  * 	Returns the square of the point P on the curve E.
- * 
+ *
  * 	@param[out]	R	The result point.
  * 	@param[in]	P	The point.
  * 	@param[in]	E	The curve.
@@ -338,7 +356,7 @@ int _double(point_t * R, point_t P, elliptic_curve_t E)
 }
 
 /**	Multiplies point with a scalar using the double-and-add method.
- * 
+ *
  * 	@param[out]	R	The point result.
  * 	@param[in]	P	The point to be multiplied.
  * 	@param[in]	s	The scalar.
@@ -347,8 +365,8 @@ int _double(point_t * R, point_t P, elliptic_curve_t E)
  */
 int double_and_add(point_t *R, point_t P, mpz_t s, elliptic_curve_t E)
 {
-	if(P_is_on_E(P, E) == 0) 
-		return 1;
+	//if(P_is_on_E(P, E) == 0)
+		//return 1;
 		
 	mpz_t *remainder, *s_cpy;
 	point_t *temp;
@@ -356,9 +374,9 @@ int double_and_add(point_t *R, point_t P, mpz_t s, elliptic_curve_t E)
 	{
 		preallocation_init();
 	}
-	remainder = &(temp_obj[13]);
-	s_cpy = &(temp_obj[14]);
-	temp = &(temp_point[0]);
+	remainder = &(temp_obj[omp_get_thread_num()][7]);
+	s_cpy = &(temp_obj[omp_get_thread_num()][8]);
+	temp = &(temp_point[omp_get_thread_num()][0]);
 	mpz_set(*s_cpy, s);
 	mpz_set(temp->x, P.x);
 	mpz_set(temp->y, P.y);
@@ -367,7 +385,7 @@ int double_and_add(point_t *R, point_t P, mpz_t s, elliptic_curve_t E)
 	//Set result to the identity element at first
 	mpz_set_ui(R->x, 0);
 	mpz_set_ui(R->y, 1);
-	mpz_set_ui(R->z, 0); 
+	mpz_set_ui(R->z, 0);
 	
 	while(mpz_sgn(*s_cpy) != 0)
 	{

@@ -62,9 +62,9 @@ int same_point(point_t R, mpz_t a, mpz_t b)
 	{
 		preallocation_init();
 	}
-	S1 = &(temp_point[1]);
-	S2 = &(temp_point[2]);
-	S = &(temp_point[3]);
+	S1 = &(temp_point[omp_get_thread_num()][1]);
+	S2 = &(temp_point[omp_get_thread_num()][2]);
+	S = &(temp_point[omp_get_thread_num()][3]);
 	double_and_add(S1, P, a, E);
 	double_and_add(S2, Q, b, E);
 	add(S, *S1, *S2, E);
@@ -85,8 +85,8 @@ void lin_comb(point_t * R, mpz_t a, mpz_t b)
 	{
 		preallocation_init();
 	}
-	S1 = &(temp_point[1]);
-	S2 = &(temp_point[2]);
+	S1 = &(temp_point[omp_get_thread_num()][1]);
+	S2 = &(temp_point[omp_get_thread_num()][2]);
 	double_and_add(S1, P, a, E);
 	double_and_add(S2, Q, b, E);
 	add(R, *S1, *S2, E);
@@ -106,10 +106,10 @@ int is_collision(mpz_t x, mpz_t a1, mpz_t a2, int trailling_bits)
 	{
 		preallocation_init();
 	}
-	b1 = &(temp_obj[15]);
-	b2 = &(temp_obj[16]);
-	xDist_ = &(temp_obj[17]);
-	R = &(temp_point[4]);
+	b1 = &(temp_obj[omp_get_thread_num()][9]);
+	b2 = &(temp_obj[omp_get_thread_num()][10]);
+	xDist_ = &(temp_obj[omp_get_thread_num()][11]);
+	R = &(temp_point[omp_get_thread_num()][4]);
 	
 	mpz_set_ui(*b2, 0);
 	mpz_set_ui(*b1, 0);

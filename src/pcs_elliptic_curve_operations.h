@@ -24,13 +24,13 @@ typedef struct
 	mpz_t p;
 }elliptic_curve_t;
 
-#define __NB_TEMP_MPZ_OBJ__ 21
+#define __NB_TEMP_MPZ_OBJ__ 18
 #define __NB_TEMP_POINTS__ 5
 extern char preallocation_init_done;
-extern mpz_t temp_obj[__NB_TEMP_MPZ_OBJ__];
-extern point_t temp_point[__NB_TEMP_POINTS__];
+extern mpz_t** temp_obj;
+extern point_t** temp_point;
 
-
+void set_nb_threads(int nb_t);
 void preallocation_init(void);
 void preallocation_clear(void);
 void point_init(point_t *P);

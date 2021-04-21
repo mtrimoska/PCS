@@ -244,6 +244,9 @@ int main(int argc,char * argv[])
 	
 	/***END: check if the __DATA_SIZE_IN_BYTES__ constant is properly set for the chosen parameters */
 	
+	/*** set the number of threads for preallocation***/
+	set_nb_threads(nb_threads);
+	
 	curve_init(&E);
 	point_init(&P);
 	point_init(&Q);

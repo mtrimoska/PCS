@@ -98,7 +98,7 @@ int struct_add_PRTL(mpz_t a_out, mpz_t a_in, mpz_t xDist)
 	{
 		preallocation_init();
 	}
-	key_mpz = &(temp_obj[20]);
+	key_mpz = &(temp_obj[omp_get_thread_num()][14]);
 	
     mpz_and(*key_mpz, xDist, mask);
     key = mpz_get_ui(*key_mpz);

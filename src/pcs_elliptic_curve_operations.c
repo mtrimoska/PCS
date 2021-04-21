@@ -61,13 +61,19 @@ void preallocation_init()
 void preallocation_clear()
 {
 	int i, j;
-	for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+	for(j = 0; j < nb_threads; j++)
 	{
-		mpz_clear(temp_obj[j][i]);
+		for(i = 0; i < __NB_TEMP_MPZ_OBJ__; i++)
+		{
+			mpz_clear(temp_obj[j][i]);
+		}
 	}
-	for(i = 0; i < __NB_TEMP_POINTS__; i++)
+	for(j = 0; j < nb_threads; j++)
 	{
-		point_clear(&temp_point[j][i]);
+		for(i = 0; i < __NB_TEMP_POINTS__; i++)
+		{
+			point_clear(&temp_point[j][i]);
+		}
 	}
 	free(temp_obj);
 	free(temp_point);

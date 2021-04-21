@@ -16,6 +16,15 @@
 /// [N-------][--------][--------][--------][-------0]
 /// [--------][--------][--------][--------][--------]
 
+unsigned long long _vect_bin_alloc_size;
+omp_lock_t _vect_alloc_size_lock;
+
+/// call once at the begin of each program
+void _vect_bin_t_initiate()
+{
+	_vect_bin_alloc_size = 0ULL;
+	omp_init_lock(&_vect_alloc_size_lock);
+}
 
 /// get bit at rank return _true or _false respectively to 1 and 0
 inline _bool_t vect_bin_get_bit(_vect_bin_t *t, int rank) {

@@ -15,11 +15,11 @@ typedef char _bool_t;
 /// Size (in bytes) of data stored in a single vector
 #define __DATA_SIZE_IN_BYTES__ 29
 
+extern unsigned long long _vect_bin_alloc_size;
+extern omp_lock_t _vect_alloc_size_lock;
+
 /// type of one cell of the binary vector
 typedef char _vect_bin_t;
-
-static unsigned long long _vect_bin_alloc_size;
-static omp_lock_t _vect_alloc_size_lock;
 
 /// Size - in bits - of the binary vector
 static const unsigned int _vect_bin_size = (__DATA_SIZE_IN_BYTES__ * (sizeof(_vect_bin_t) << 3));
@@ -36,11 +36,6 @@ typedef struct __vect_bin_list_t {
   _vect_bin_t v[__DATA_SIZE_IN_BYTES__];
   struct __vect_bin_list_t *nxt;
 } __attribute__((packed)) _vect_bin_chain_t;
-
-/// call once at the begin of each program
-#define _vect_bin_t_initiate \
-  _vect_bin_alloc_size = 0ULL; \
-  omp_init_lock(&_vect_alloc_size_lock) 
 
 /// call it when you allocate several (_n) cells that will start
 /// each one list.
@@ -63,6 +58,7 @@ typedef struct __vect_bin_list_t {
 
 /// ----------------------------------- prototypes
 
+void _vect_bin_t_initiate(void);
 void print_vect_bin(_vect_bin_t *);
 _vect_bin_t *vect_bin_t_reset(_vect_bin_t *);
 _bool_t vect_bin_get_bit(_vect_bin_t *, int);

@@ -44,13 +44,12 @@ void struct_init_PRTL(uint8_t _nb_bits, uint8_t trailling_bits, int nb_threads, 
     uint8_t c = nb_bits - trailling_bits;
 	level = _level;
     suffix_len = c - level;
-    unsigned int __vect_bin_size = nb_bits + suffix_len; //already init as a constant
     xDist_start = 0;
     xDist_end = suffix_len - 1;
     a_start = suffix_len;
     a_end = xDist_end + nb_bits;
     chain_array_size = pow(2, level);
-     _vect_bin_t_initiate;
+	_vect_bin_t_initiate();
     
     /* allocate chain table */
 	

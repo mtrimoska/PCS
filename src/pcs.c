@@ -212,38 +212,38 @@ long long int pcs_run(mpz_t x_res, int nb_threads, int nb_collisions)
 		gmp_randseed_ui(r_state, time(NULL) * (omp_get_thread_num() + 1));
 		mpz_urandomb(a, r_state, nb_bits);
 		double_and_add(&R, P, a, E);
-        trail_length = 0;
+        	trail_length = 0;
 		
 		while(collision_count < nb_collisions)
 		{
-            if(is_distinguished(R, trailling_bits, &xDist))
+            		if(is_distinguished(R, trailling_bits, &xDist))
 			{
-                if(struct_add(a2, a, xDist, xDist_str))
+                		if(struct_add(a2, a, xDist, xDist_str))
 				{
 					if(is_collision(x, a, a2, trailling_bits))
 					{
 						#pragma omp critical
 						{
 							collision_count++;
-                            mpz_set(x_res, x);
+                            				mpz_set(x_res, x);
 						}
 					}
 				}
 				mpz_urandomb(a, r_state, nb_bits);
 				double_and_add(&R, P, a, E);
-                trail_length = 0;
+                		trail_length = 0;
 			}
 			else
 			{
 				r=hash(R.y);
 				f(R, M[r], &R, E);
-                trail_length++;
-                if(trail_length > trail_length_max)
-                {
-                    mpz_urandomb(a, r_state, nb_bits);
-                    double_and_add(&R, P, a, E);
-                    trail_length = 0;
-                }
+                		trail_length++;
+               			if(trail_length > trail_length_max)
+                		{
+                    			mpz_urandomb(a, r_state, nb_bits);
+                    			double_and_add(&R, P, a, E);
+                    			trail_length = 0;
+                		}
 			}
 		}
 		point_clear(&R);
